@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Block war</title>
+</head>
+<style>
+    body {
+
+        background: linear-gradient(90deg, rgb(138, 154, 157), rgb(166, 182, 181));
+   
+    }
+
+
+    .war-ground {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 1200px;
+        height: 600px;
+        box-shadow: 0px 0px 10px rgb(113, 130, 133);
+        display: flex;
+        background: transparent;
+        align-items: center;
+        overflow: hidden;
+        transition: all 0.3s;
+    }
+
+    .ground {
+        width: 600px;
+        height: 600px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(25px, 1fr));
+        grid-gap: 0;
+        padding: 0;
+        margin: 0;
+    }
+
+    .G1-block {
+        background: rgb(217, 232, 227);
+        width: 25px;
+        height: 25px;
+    }
+
+    .G2-block {
+        background: rgb(17, 76, 92);
+        width: 25px;
+        height: 25px;
+    }
+
+    .balls {
+        width: 20px;
+        height: 20px;
+        background-color: rgb(217, 232, 227);
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 75%;
+        transition: transform 0.5s ease;
+    }
+
+    #ball2 {
+        background: rgb(17, 76, 92);
+        position: absolute;
+        top: 50%;
+        left: 25%;
+    }
+    
+    @media (max-width: 768px) {
+            .war-ground {
+            height: 320px;
+               width: 600px;
+               transform: translate(-50%,-50%) rotate(90deg);
+          
+            }
+
+            .ground {
+                width: 320px;
+                height: 600px;
+                display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(15px, 1fr));
+        grid-gap: 0;
+            }
+
+            .G1-block,
+            .G2-block {
+                width: 15px;
+                height: 15px;
+            }
+
+            .balls {
+                width: 16px;
+                height: 16px;
+            }
+        }
+</style>
+
+<body>
+    <div class="war-ground">
+        <div id="ball1" class="balls balla"></div>
+        <div id="ball2" class="balls ballb"></div>
+        <div id="ball1" class="balls balla"></div>
+        <div id="ball2" class="balls ballb"></div>
+        <div id="ball1" class="balls balla"></div>
+        <div id="ball2" class="balls ballb"></div>
+        <div id="ball1" class="balls balla"></div>
+        <div id="ball2" class="balls ballb"></div>
+
+        <div class="ground1 ground" id="ground1"></div>
+        <div class="ground2 ground" id="ground2"></div>
+    </div>
+   
+    <script>
+        const Gr1 = document.getElementById('ground1');
+        const Gr2 = document.getElementById('ground2');
+        
+      
+        
+
+        let wblocksize = 25;
+       
+         if (window.innerWidth < 728) {
+             wblocksize = 15;
+         }
+        const rows = Math.floor(Gr1.clientHeight / wblocksize);
+        const cols = Math.floor(Gr2.clientWidth / wblocksize);
+
+        for (let i = 0; i < rows * cols; i++) {
+            const G1block = document.createElement('div');
+            G1block.classList.add('G1-block');
+            Gr1.appendChild(G1block);
+        }
+        for (let i = 0; i < rows * cols; i++) {
+            const G2block = document.createElement('div');
+            G2block.classList.add('G2-block');
+            Gr2.appendChild(G2block);
+        }
+
+
+        var ground = document.querySelector(".war-ground");
+        // var ball1 = document.getElementById("ball1")
+        // var ball2 = document.getElementById("ball2")
+        var ball1 = document.getElementsByClassName("balla");
+        var ball2 = document.getElementsByClassName("ballb");
+        
+        for (var i = 0; i < ball1.length; i++) {
+            var balla = ball1[i];
+            var ballb = ball2[i];
+            moveBall1(balla,ballb);
+            moveBall2(ballb,balla);
+        }
+        // for (var i = 0; i < ball1.length; i++) {
+        //     var ball = ball1[i];
+        //     moveBall2(ball2);
+        // }
+        // moveBall1(ball1);
+        // moveBall2(ball2);
+
+
+
+
+        function moveBall1(ball1,ball2) {
+            var directionX = Math.floor(Math.random() * 11-11.1 );
+            var directionY = Math.floor(Math.random() * 11-11.1);
+
+            function animate() {
+                var x = ball1.offsetLeft;
+                var y = ball1.offsetTop;
+
+                x += directionX * 2;
+                y += directionY * 2;
+
+                ball1.style.left = x + "px";
+                ball1.style.top = y + "px";
+
+
+
+                var rect1 = ball1.getBoundingClientRect();
+                var rect2 = ball2.getBoundingClientRect();
+
+                if (
+                    rect1.left < rect2.right &&
+                    rect1.right > rect2.left &&
+                    rect1.top < rect2.bottom &&
+                    rect1.bottom > rect2.top
+                ) {
+                    directionX *= -1;
+                    directionY *= -1;
+
+
+                }
+
+                var rect1 = ball1.getBoundingClientRect();
+                var allBlocks = document.querySelectorAll('.G1-block, .G2-block');
+
+                allBlocks.forEach(block => {
+                    var rect2 = block.getBoundingClientRect();
+                    var blockColor = window.getComputedStyle(block).backgroundColor;
+                    // console.log(blockColor);
+
+                    if (
+                        rect1.left < rect2.right &&
+                        rect1.right > rect2.left &&
+                        rect1.top < rect2.bottom &&
+                        rect1.bottom > rect2.top &&
+                        blockColor === 'rgb(217, 232, 227)'
+                    ) {
+                        // console.log("hit");
+                        block.style.backgroundColor = 'rgb(17, 76, 92)';
+
+
+                        directionX *= -1;
+                        directionY *= -1;
+                    }
+                });
+
+
+                if (x <= 0 || x >= ground.clientWidth - ball1.clientWidth) {
+                    directionX *= -1;
+                }
+                if (y <= 0 || y >= ground.clientHeight - ball1.clientHeight) {
+                    directionY *= -1;
+                }
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+
+
+
+        function moveBall2(ball2,ball1) {
+            var directionX = Math.floor(Math.random() * 11-11.1);
+            var directionY = Math.floor(Math.random() * 11-11.1);
+            function animate() {
+                var x = ball2.offsetLeft;
+                var y = ball2.offsetTop;
+
+                x += directionX * 2;
+                y += directionY * 2;
+
+                ball2.style.left = x + "px";
+                ball2.style.top = y + "px";
+
+
+                var rect1 = ball2.getBoundingClientRect();
+                var allBlocks = document.querySelectorAll('.G1-block, .G2-block');
+
+                allBlocks.forEach(block => {
+                    var rect2 = block.getBoundingClientRect();
+                    var blockColor = window.getComputedStyle(block).backgroundColor;
+                    // console.log(blockColor);
+
+                    if (
+                        rect1.left < rect2.right &&
+                        rect1.right > rect2.left &&
+                        rect1.top < rect2.bottom &&
+                        rect1.bottom > rect2.top &&
+                        blockColor === 'rgb(17, 76, 92)'
+                    ) {
+                        // console.log("hit");
+                        block.style.backgroundColor = 'rgb(217, 232, 227)';
+
+
+                        directionX *= -1;
+                        directionY *= -1;
+                    }
+                });
+
+                if (x <= 0 || x >= ground.clientWidth - ball2.clientWidth) {
+                    directionX *= -1;
+                }
+                if (y <= 0 || y >= ground.clientHeight - ball2.clientHeight) {
+                    directionY *= -1;
+                }
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+    </script>
+</body>
+
+</html>
